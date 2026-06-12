@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 
 <head>
     <meta charset="UTF-8">
@@ -8,7 +8,9 @@
     <!-- Modern Typography: Outfit -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Cairo:wght@400;600;700&display=swap"
+        rel="stylesheet">
 
     <style>
         /* CSS Reset & Variables */
@@ -42,7 +44,6 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            /* Use flex-start instead of center to prevent the top of the page from being cut off on small screens */
             justify-content: flex-start;
             align-items: center;
             color: var(--text-color);
@@ -52,6 +53,43 @@
             position: relative;
             background-color: var(--m22);
             box-sizing: border-box;
+            transition: font-family 0.3s ease;
+        }
+
+        /* Arabic Font Override */
+        body[dir="rtl"] {
+            font-family: 'Cairo', sans-serif;
+        }
+
+        /* -------------------------------------- */
+        /* Language Toggle Button                 */
+        /* -------------------------------------- */
+        .lang-toggle {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.85);
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            margin-top: 4px;
+        }
+
+        .lang-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .lang-toggle:active {
+            transform: translateY(1px);
         }
 
         /* -------------------------------------- */
@@ -91,7 +129,6 @@
         /* -------------------------------------- */
         /* Dynamic Environment Elements           */
         /* -------------------------------------- */
-        /* Stars */
         .stars {
             position: absolute;
             inset: 0;
@@ -121,7 +158,6 @@
             }
         }
 
-        /* Shooting Star */
         .shooting-star {
             position: absolute;
             width: 100px;
@@ -139,11 +175,7 @@
                 opacity: 1;
             }
 
-            10% {
-                transform: translateX(-400px) translateY(400px) rotate(-45deg);
-                opacity: 0;
-            }
-
+            10%,
             100% {
                 transform: translateX(-400px) translateY(400px) rotate(-45deg);
                 opacity: 0;
@@ -161,8 +193,6 @@
             padding: 30px 20px;
             text-align: center;
             border-radius: 32px;
-
-            /* Premium Glassmorphism for Night Mode */
             background: var(--glass-bg-night);
             backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
@@ -170,9 +200,7 @@
             border-left: 1px solid rgba(255, 255, 255, 0.15);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             border-right: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4),
-                inset 0 0 0 1px rgba(255, 255, 255, 0.02);
-
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.02);
             animation: containerEnter 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
             opacity: 0;
             transform: translateY(40px) scale(0.95);
@@ -199,6 +227,7 @@
             margin-bottom: 20px;
             flex-wrap: wrap;
             z-index: 10;
+            margin-top: 20px;
         }
 
         .phone-carousel-wrapper {
@@ -215,19 +244,22 @@
             gap: 20px;
             width: 100%;
             height: 100%;
-            padding: 0 5%;
-            
+            padding: 0 20px;
             overflow-x: auto;
             overflow-y: hidden;
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
-            
-            scrollbar-width: none; /* Hide scrollbar for a clean app feel */
-            
+            scrollbar-width: none;
             animation: containerEnter 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
             opacity: 0;
             transform: translateY(40px) scale(0.95);
             animation-delay: 0.2s;
+        }
+
+        .phone-showcase::after {
+            content: '';
+            flex: 0 0 20px;
+            height: 1px;
         }
 
         .phone-showcase::-webkit-scrollbar {
@@ -267,53 +299,89 @@
             border-radius: 28px;
         }
 
-        @keyframes floatPhone {
-            0%, 100% { transform: translateY(0px) rotate(-2deg); }
-            50% { transform: translateY(-20px) rotate(1deg); }
-        }
-
-        @keyframes floatPhoneSecondary {
-            0%, 100% { transform: translateX(90px) translateY(40px) scale(0.9) rotate(6deg); }
-            50% { transform: translateX(90px) translateY(20px) scale(0.9) rotate(9deg); }
-        }
-
-        /* Responsive adjustments for Desktop */
         @media (min-width: 900px) {
-            body { padding: 60px 0; }
-            .container { padding: 50px 40px; }
-            h1 { font-size: 40px; margin-bottom: 12px; }
-            p { font-size: 17px; margin-bottom: 40px; }
+            body {
+                padding: 60px 0;
+            }
+
+            .container {
+                padding: 50px 40px;
+            }
+
+            h1 {
+                font-size: 40px;
+                margin-bottom: 12px;
+            }
+
+            p {
+                font-size: 17px;
+                margin-bottom: 40px;
+            }
+
             .hero-section {
                 flex-direction: row;
                 gap: 80px;
+                margin-top: 0;
             }
+
             .phone-carousel-wrapper {
                 width: 320px;
                 height: 650px;
                 max-width: none;
             }
+
             .phone-showcase {
                 gap: 40px;
                 padding: 0 30px;
             }
+
             .phone-mockup {
                 flex: 0 0 260px;
                 height: 550px;
                 border-radius: 36px;
             }
+
             .phone-notch {
                 width: 120px;
                 height: 25px;
                 border-bottom-left-radius: 16px;
                 border-bottom-right-radius: 16px;
             }
-            .features-grid { gap: 24px; padding-bottom: 15px; }
-            .feature-card { flex: 0 0 300px; padding: 32px 28px; border-radius: 28px; }
-            .feature-card h3 { font-size: 22px; margin-bottom: 12px; }
-            .feature-card p { font-size: 15px; }
-            .app-icon-wrapper { width: 130px; height: 130px; margin-bottom: 32px; }
-            .app-icon { border-radius: 28px; }
-            .app-icon::after { border-radius: 28px; }
+
+            .features-grid {
+                gap: 24px;
+                padding-bottom: 15px;
+            }
+
+            .feature-card {
+                flex: 0 0 300px;
+                padding: 32px 28px;
+                border-radius: 28px;
+            }
+
+            .feature-card h3 {
+                font-size: 22px;
+                margin-bottom: 12px;
+            }
+
+            .feature-card p {
+                font-size: 15px;
+            }
+
+            .app-icon-wrapper {
+                width: 130px;
+                height: 130px;
+                margin-bottom: 32px;
+            }
+
+            .app-icon {
+                border-radius: 28px;
+            }
+
+            .app-icon::after {
+                border-radius: 28px;
+            }
+
         }
 
         /* -------------------------------------- */
@@ -327,21 +395,23 @@
             max-width: 950px;
             width: 100%;
             margin-top: 20px;
-            padding: 0 5% 15px 5%; /* space for scrollbar and alignment */
+            padding: 0 20px 15px 20px;
             box-sizing: border-box;
-            
-            /* Horizontal scrolling configuration */
             overflow-x: auto;
             overflow-y: hidden;
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
-            
-            scrollbar-width: none; /* Hide scrollbar for a clean app feel */
-            
+            scrollbar-width: none;
             animation: containerEnter 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
             opacity: 0;
             transform: translateY(40px) scale(0.95);
             animation-delay: 0.3s;
+        }
+
+        .features-grid::after {
+            content: '';
+            flex: 0 0 20px;
+            height: 1px;
         }
 
         .features-grid::-webkit-scrollbar {
@@ -349,7 +419,7 @@
         }
 
         .feature-card {
-            flex: 0 0 260px; /* Fixed width so cards don't shrink and enable horizontal scrolling */
+            flex: 0 0 260px;
             scroll-snap-align: center;
             background: var(--glass-bg-night);
             backdrop-filter: blur(30px);
@@ -362,6 +432,10 @@
             border-radius: 24px;
             padding: 24px 20px;
             text-align: left;
+        }
+
+        body[dir="rtl"] .feature-card {
+            text-align: right;
         }
 
         .feature-icon {
@@ -409,7 +483,6 @@
             position: relative;
         }
 
-        /* Subtle inner glow for the icon */
         .app-icon::after {
             content: '';
             position: absolute;
@@ -489,16 +562,15 @@
             font-weight: 300;
         }
 
-        /* -------------------------------------- */
-        /* Controls & Interactive Elements        */
-        /* -------------------------------------- */
+        /* Controls */
         .controls {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
+            gap: 12px;
         }
 
-        /* Download Button */
         .btn-download {
             position: relative;
             background: rgba(255, 255, 255, 0.15);
@@ -556,38 +628,35 @@
 <body>
     <!-- Background Layers -->
     <div class="bg-night"></div>
-
-    <!-- Night Elements -->
     <div class="stars" id="stars-container"></div>
+
 
     <!-- Hero Section -->
     <div class="hero-section">
         <!-- Main Content -->
         <div class="container">
-            <!-- 1. App Icon with floating shadow -->
             <div class="app-icon-wrapper">
                 <div class="app-icon">
                     <img src="chams.svg" alt="Jawwi App Icon">
                 </div>
                 <div class="app-icon-shadow"></div>
             </div>
-            <!-- 2. Title -->
-            <h1>Jawwi Weather</h1>
-            <!-- 3. Description -->
-            <p>
-                Experience premium Algerian weather forecasting. Designed with stunning glassmorphism, real-time data, and
-                immersive dynamic environments.
+            <h1 data-key="title">Jawwek App</h1>
+            <p data-key="desc">
+                Your friendly, beautifully designed Algerian weather companion. Stay ahead of the rain and shine with
+                precise local forecasts and gorgeous dynamic skies.
             </p>
-            <!-- 4. Controls -->
             <div class="controls">
-                <!-- Download Button -->
-                <a href="https://github.com/Elwaliid/jawwi/releases/download/v1.0.0/app-release.apk" class="btn-download">
+                <a href="app-release.apk" download
+                    class="btn-download">
                     <svg class="download-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path
                             d="M12 16L7 11L8.4 9.55L11 12.15V4H13V12.15L15.6 9.55L17 11L12 16ZM6 20C5.45 20 4.97917 19.8042 4.5875 19.4125C4.19583 19.0208 4 18.55 4 18V15H6V18H18V15H20V18C20 18.55 19.8042 19.0208 19.4125 19.4125C19.0208 19.8042 18.55 20 18 20H6Z" />
                     </svg>
-                    Download APK
+                    <span data-key="download">Download APK</span>
                 </a>
+                <!-- Subtle Language Toggle placed centrally below the CTA -->
+                <button class="lang-toggle" id="langToggle">العربية</button>
             </div>
         </div>
 
@@ -624,42 +693,99 @@
 
     <!-- Advantages / Features Grid -->
     <div class="features-grid">
-        <!-- Feature 1 -->
         <div class="feature-card">
-            <div class="feature-icon">📍</div>
-            <h3>Smart Local Weather</h3>
-            <p>Accurate forecasts across all 58 Wilayas. Jawwi uses reliable GPS location to instantly deliver precise
-                weather conditions for your exact neighborhood in Algeria, wherever you are.</p>
+
+            <h3 data-key="f1_title">Smart Local Weather</h3>
+            <p data-key="f1_desc">Accurate forecasts across all 58 Wilayas. Jawwi uses reliable GPS location to
+                instantly deliver precise weather conditions for your exact neighborhood in Algeria, wherever you are.
+            </p>
         </div>
-        <!-- Feature 2 -->
         <div class="feature-card">
-            <div class="feature-icon">📊</div>
-            <h3>Detailed Hourly Charts</h3>
-            <p>Plan your day with confidence using beautiful, interactive temperature graphs. Perfect for knowing
-                exactly when the heat will peak or when to expect rain across the week.</p>
+
+            <h3 data-key="f2_title">Detailed Hourly Charts</h3>
+            <p data-key="f2_desc">Plan your day with confidence using beautiful, interactive temperature graphs. Perfect
+                for knowing exactly when the heat will peak or when to expect rain across the week.</p>
         </div>
-        <!-- Feature 3 -->
         <div class="feature-card">
-            <div class="feature-icon">✨</div>
-            <h3>Dynamic Environments</h3>
-            <p>The UI comes alive! Experience immersive backgrounds and smooth animations that react in real-time to the
-                weather outside your window, all packaged in a premium glassmorphic design.</p>
+
+            <h3 data-key="f3_title">Dynamic Environments</h3>
+            <p data-key="f3_desc">The UI comes alive! Experience immersive backgrounds and smooth animations that react
+                in real-time to the weather outside your window, all packaged in a premium glassmorphic design.</p>
         </div>
-        <!-- Feature 4 -->
         <div class="feature-card">
-            <div class="feature-icon">💾</div>
-            <h3>Offline Ready</h3>
-            <p>Jawwi saves up to 2 weeks of weather data in the cache. You can explore the forecast offline for your GPS location or the last place you searched, even without an internet connection.</p>
+
+            <h3 data-key="f4_title">Offline Ready</h3>
+            <p data-key="f4_desc">Jawwi saves up to 2 weeks of weather data in the cache. You can explore the forecast
+                offline for your GPS location or the last place you searched, even without an internet connection.</p>
         </div>
-        <!-- Feature 5 -->
         <div class="feature-card">
-            <div class="feature-icon">📅</div>
-            <h3>Calendar & Smart Search</h3>
-            <p>Plan ahead with our dedicated calendar screen. Plus, the smart search bar overlay instantly displays relevant Wilaya and Baladiya suggestions as you type.</p>
+
+            <h3 data-key="f5_title">Calendar & Smart Search</h3>
+            <p data-key="f5_desc">Plan ahead with our dedicated calendar screen. Plus, the smart search bar overlay
+                instantly displays relevant Wilaya and Baladiya suggestions as you type.</p>
         </div>
     </div>
 
     <script>
+        // Language Dictionary
+        const translations = {
+            en: {
+                toggleBtn: "العربية",
+                title: "Jawwek App",
+                desc: "Your friendly, beautifully designed Algerian weather companion. Stay ahead of the rain and shine with precise local forecasts and gorgeous dynamic skies.",
+                download: "Download APK",
+                f1_title: "Smart Local Weather",
+                f1_desc: "Accurate forecasts across all 58 Wilayas. Jawwi uses reliable GPS location to instantly deliver precise weather conditions for your exact neighborhood in Algeria, wherever you are.",
+                f2_title: "Detailed Hourly Forecast",
+                f2_desc: "Plan your day with confidence using beautiful, daily temperature Forecast. Perfect for knowing exactly when the heat will peak or when to expect rain across the week.",
+                f3_title: "Dynamic Background",
+                f3_desc: "The UI comes alive! Experience immersive backgrounds that react in real-time to the weather outside your window, aslo the smooth animations all packaged in a premium glassmorphic design.",
+                f4_title: "Offline Ready",
+                f4_desc: "Jawwi saves up to 2 weeks of weather data in the cache. You can explore the forecast offline for your GPS location or the last place you searched, even without an internet connection.",
+                f5_title: "Calendar & Smart Search",
+                f5_desc: "Plan ahead with our dedicated calendar screen. Plus, the smart search bar overlay instantly displays relevant Wilaya and Baladiya suggestions as you type."
+            },
+            ar: {
+                toggleBtn: "English",
+                title: "تطبيق جوّك",
+                desc: "رفيقك الودود والمصمم بشكل جميل لمعرفة طقس الجزائر. ابق على اطلاع دائم بأحوال الطقس مع توقعات محلية دقيقة وسماء ديناميكية رائعة.",
+                download: "تحميل التطبيق",
+                f1_title: "طقس محلي ذكي",
+                f1_desc: "توقعات دقيقة عبر جميع الولايات الـ 58. يستخدم جوّك موقع GPS لتقديم أحوال الطقس الدقيقة لحيّك في الجزائر لحظة بلحظة، أينما كنت.",
+                f2_title: "توقعات جوية مفصلة لكل ساعة",
+                f2_desc: "خطط ليومك بثقة باستخدام توقعات درجات الحرارة الجميلة لكل ساعة. مثالي لمعرفة متى ستبلغ الحرارة ذروتها أو متى تتوقع هطول المطر طوال الأسبوع.",
+                f3_title: "خلفية ديناميكية",
+                f3_desc: " واجهة المستخدم تنبض بالحياة! استمتع بخلفيات غامرة تتفاعل في الوقت الفعلي مع الطقس خارج نافذتك، بالإضافة إلى الرسوم المتحركة السلسة، وكل ذلك مُغلف بتصميم زجاجي فاخر.",
+                f4_title: "يعمل بدون إنترنت",
+                f4_desc: "يحفظ جوّك ما يصل إلى أسبوعين من بيانات الطقس في الذاكرة المؤقتة. يمكنك استكشاف التوقعات دون اتصال بالإنترنت لموقعك الحالي أو آخر مكان بحثت عنه.",
+                f5_title: "التقويم والبحث الذكي",
+                f5_desc: "خطط مسبقاً باستخدام شاشة التقويم المخصصة لدينا. بالإضافة إلى ذلك، يعرض شريط البحث الذكي اقتراحات الولايات والبلديات ذات الصلة فور كتابتها."
+            }
+        };
+
+        let currentLang = 'en';
+        const langToggleBtn = document.getElementById('langToggle');
+
+        langToggleBtn.addEventListener('click', () => {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+
+            // Set RTL/LTR direction
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            document.body.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+
+            // Update Toggle Button Text
+
+            langToggleBtn.innerText = translations[currentLang].toggleBtn;
+
+            // Update all elements with data-key
+            document.querySelectorAll('[data-key]').forEach(element => {
+                const key = element.getAttribute('data-key');
+                if (translations[currentLang][key]) {
+                    element.innerText = translations[currentLang][key];
+                }
+            });
+        });
+
         // Generate Random Stars
         const starsContainer = document.getElementById('stars-container');
         const starCount = 60;
@@ -676,7 +802,6 @@
             starsContainer.appendChild(star);
         }
 
-        // Add a shooting star
         const shootingStar = document.createElement('div');
         shootingStar.className = 'shooting-star';
         shootingStar.style.left = '80%';
