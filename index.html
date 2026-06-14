@@ -427,6 +427,18 @@
             display: none;
         }
 
+        /* Drag-scroll cursors */
+        .phone-showcase,
+        .features-grid {
+            cursor: grab;
+            user-select: none;
+        }
+
+        .phone-showcase.is-dragging,
+        .features-grid.is-dragging {
+            cursor: grabbing;
+        }
+
         .feature-card {
             flex: 0 0 260px;
             scroll-snap-align: center;
@@ -818,6 +830,55 @@
         shootingStar.style.left = '80%';
         shootingStar.style.top = '10%';
         starsContainer.appendChild(shootingStar);
+
+        // -----------------------------------------------
+        // Mouse Scroll & Drag Helpers for Carousels
+        // -----------------------------------------------
+        function addScrollBehavior(el) {
+            if (!el) return;
+
+            // Mouse-wheel → horizontal scroll
+            el.addEventListener('wheel', (e) => {
+                // Only hijack purely-vertical wheel events
+                if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+                    e.preventDefault();
+                    el.scrollLeft += e.deltaY * 1.2;
+                }
+            }, { passive: false });
+
+            // Click-and-drag scrolling
+            let isDown = false;
+            let startX;
+            let scrollLeftStart;
+
+            el.addEventListener('mousedown', (e) => {
+                isDown = true;
+                el.classList.add('is-dragging');
+                startX = e.pageX - el.getBoundingClientRect().left;
+                scrollLeftStart = el.scrollLeft;
+            });
+
+            el.addEventListener('mouseleave', () => {
+                isDown = false;
+                el.classList.remove('is-dragging');
+            });
+
+            el.addEventListener('mouseup', () => {
+                isDown = false;
+                el.classList.remove('is-dragging');
+            });
+
+            el.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - el.getBoundingClientRect().left;
+                const walk = (x - startX) * 1.5;
+                el.scrollLeft = scrollLeftStart - walk;
+            });
+        }
+
+        addScrollBehavior(document.querySelector('.phone-showcase'));
+        addScrollBehavior(document.querySelector('.features-grid'));
     </script>
 </body>
 
