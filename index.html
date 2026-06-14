@@ -427,18 +427,6 @@
             display: none;
         }
 
-        /* Drag-scroll cursors */
-        .phone-showcase,
-        .features-grid {
-            cursor: grab;
-            user-select: none;
-        }
-
-        .phone-showcase.is-dragging,
-        .features-grid.is-dragging {
-            cursor: grabbing;
-        }
-
         .feature-card {
             flex: 0 0 260px;
             scroll-snap-align: center;
@@ -831,54 +819,47 @@
         shootingStar.style.top = '10%';
         starsContainer.appendChild(shootingStar);
 
-        // -----------------------------------------------
-        // Mouse Scroll & Drag Helpers for Carousels
-        // -----------------------------------------------
-        function addScrollBehavior(el) {
-            if (!el) return;
-
-            // Mouse-wheel → horizontal scroll
-            el.addEventListener('wheel', (e) => {
-                // Only hijack purely-vertical wheel events
-                if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-                    e.preventDefault();
-                    el.scrollLeft += e.deltaY * 1.2;
-                }
-            }, { passive: false });
-
-            // Click-and-drag scrolling
+        // --- Drag-to-scroll & disable mouse-wheel scroll on carousels (desktop) ---
+        function enableDragScroll(el) {
             let isDown = false;
             let startX;
-            let scrollLeftStart;
+            let scrollLeft;
 
             el.addEventListener('mousedown', (e) => {
                 isDown = true;
-                el.classList.add('is-dragging');
-                startX = e.pageX - el.getBoundingClientRect().left;
-                scrollLeftStart = el.scrollLeft;
+                el.style.cursor = 'grabbing';
+                startX = e.pageX - el.offsetLeft;
+                scrollLeft = el.scrollLeft;
+                e.preventDefault();
             });
 
             el.addEventListener('mouseleave', () => {
                 isDown = false;
-                el.classList.remove('is-dragging');
+                el.style.cursor = 'grab';
             });
 
             el.addEventListener('mouseup', () => {
                 isDown = false;
-                el.classList.remove('is-dragging');
+                el.style.cursor = 'grab';
             });
 
             el.addEventListener('mousemove', (e) => {
                 if (!isDown) return;
                 e.preventDefault();
-                const x = e.pageX - el.getBoundingClientRect().left;
+                const x = e.pageX - el.offsetLeft;
                 const walk = (x - startX) * 1.5;
-                el.scrollLeft = scrollLeftStart - walk;
+                el.scrollLeft = scrollLeft - walk;
             });
+
+            // Prevent mouse wheel from scrolling these containers
+            el.addEventListener('wheel', (e) => {
+                e.preventDefault();
+            }, { passive: false });
+
+            el.style.cursor = 'grab';
         }
 
-        addScrollBehavior(document.querySelector('.phone-showcase'));
-        addScrollBehavior(document.querySelector('.features-grid'));
+        document.querySelectorAll('.phone-showcase, .features-grid').forEach(enableDragScroll);
     </script>
 </body>
 
