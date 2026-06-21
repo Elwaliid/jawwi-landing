@@ -558,6 +558,7 @@
             font-weight: 700;
             letter-spacing: -0.5px;
             background: linear-gradient(to right, #fff, rgba(255, 255, 255, 0.7));
+            background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -631,6 +632,32 @@
             height: 20px;
             fill: currentColor;
         }
+
+        /* -------------------------------------- */
+        /* Download status / fallback link        */
+        /* -------------------------------------- */
+        .download-meta {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.55);
+            margin-top: 2px;
+            min-height: 16px;
+            transition: opacity 0.3s ease;
+        }
+
+        .fallback-link {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: underline;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-family: inherit;
+            padding: 2px;
+        }
+
+        .fallback-link:hover {
+            color: rgba(255, 255, 255, 0.9);
+        }
     </style>
 </head>
 
@@ -656,13 +683,14 @@
                 وسماء ديناميكية رائعة.
             </p>
             <div class="controls">
-                <a href="Jawwek.apk" download class="btn-download">
+                <a href="Jawwek.apk" download id="downloadBtn" class="btn-download">
                     <svg class="download-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path
                             d="M12 16L7 11L8.4 9.55L11 12.15V4H13V12.15L15.6 9.55L17 11L12 16ZM6 20C5.45 20 4.97917 19.8042 4.5875 19.4125C4.19583 19.0208 4 18.55 4 18V15H6V18H18V15H20V18C20 18.55 19.8042 19.0208 19.4125 19.4125C19.0208 19.8042 18.55 20 18 20H6Z" />
                     </svg>
                     <span data-key="download">تحميل التطبيق</span>
                 </a>
+                <div class="download-meta" id="downloadMeta"></div>
                 <!-- Subtle Language Toggle placed centrally below the CTA -->
                 <button class="lang-toggle" id="langToggle">English</button>
             </div>
@@ -693,9 +721,13 @@
                 </div>
                 <div class="phone-mockup" style="animation-delay: 2.5s;">
                     <div class="phone-notch"></div>
-                    <img src="night4.jpg" alt="Jawwi Settings Screen" class="phone-screen">
+                    <img src="parametre.jpg" alt="Jawwi Settings Screen" class="phone-screen">
                 </div>
                 <div class="phone-mockup" style="animation-delay: 3.0s;">
+                    <div class="phone-notch"></div>
+                    <img src="night4.jpg" alt="Jawwi Settings Screen" class="phone-screen">
+                </div>
+                <div class="phone-mockup" style="animation-delay: 3.5s;">
                     <div class="phone-notch"></div>
                     <img src="night5.jpg" alt="Jawwi Additional Screen" class="phone-screen">
                 </div>
@@ -754,7 +786,11 @@
                 f4_title: "Offline Ready",
                 f4_desc: "Jawwi saves up to 2 weeks of weather data in the cache. You can explore the forecast offline for your GPS location or the last place you searched, even without an internet connection.",
                 f5_title: "Calendar & Smart Search",
-                f5_desc: "Plan ahead with our dedicated calendar screen. Plus, the smart search bar overlay instantly displays relevant Wilaya and Baladiya suggestions as you type."
+                f5_desc: "Plan ahead with our dedicated calendar screen. Plus, the smart search bar overlay instantly displays relevant Wilaya and Baladiya suggestions as you type.",
+                metaArm64: "Optimized 64-bit build detected",
+                metaArm32: "32-bit build selected for your device",
+                metaDefault: "64-bit build (default)",
+                fallback32: "Older device? Get the 32-bit version"
             },
             ar: {
                 toggleBtn: "English",
@@ -770,7 +806,11 @@
                 f4_title: "يعمل بدون إنترنت",
                 f4_desc: "يحفظ جوّك ما يصل إلى أسبوعين من بيانات الطقس في الذاكرة المؤقتة. يمكنك استكشاف التوقعات دون اتصال بالإنترنت لموقعك الحالي أو آخر مكان بحثت عنه.",
                 f5_title: "التقويم والبحث الذكي",
-                f5_desc: "خطط مسبقاً باستخدام شاشة التقويم المخصصة لدينا. بالإضافة إلى ذلك، يعرض شريط البحث الذكي اقتراحات الولايات والبلديات ذات الصلة فور كتابتها."
+                f5_desc: "خطط مسبقاً باستخدام شاشة التقويم المخصصة لدينا. بالإضافة إلى ذلك، يعرض شريط البحث الذكي اقتراحات الولايات والبلديات ذات الصلة فور كتابتها.",
+                metaArm64: "تم اكتشاف نسخة 64-بت محسّنة",
+                metaArm32: "تم اختيار نسخة 32-بت لجهازك",
+                metaDefault: "نسخة 64-بت (افتراضية)",
+                fallback32: "جهاز قديم؟ حمّل نسخة 32-بت"
             }
         };
 
@@ -795,6 +835,9 @@
                     element.innerText = translations[currentLang][key];
                 }
             });
+
+            // Refresh the dynamic download-meta text in the new language
+            renderDownloadMeta();
         });
 
         // Generate Random Stars
@@ -825,6 +868,112 @@
                 e.preventDefault();
                 el.scrollBy({ left: e.deltaY !== 0 ? e.deltaY : e.deltaX, behavior: 'smooth' });
             }, { passive: false });
+        });
+
+        /* ======================================================
+           Device-capability detection: ARM64 vs 32-bit APK
+           ======================================================
+           Strategy (best available accuracy, in priority order):
+           1. Chromium "User-Agent Client Hints" high-entropy values
+              (navigator.userAgentData.getHighEntropyValues) — when
+              supported, this reports the REAL CPU architecture/
+              bitness reported by the OS. This is the most accurate
+              signal currently exposed to web pages.
+           2. Legacy UA-string regex fallback — catches older
+              32-bit-only Android builds (armv7 / armeabi / i686)
+              on browsers that predate UA-CH.
+           3. Default: if both signals are inconclusive (most iOS
+              browsers, older Chromium, Firefox, Safari — none of
+              which expose architecture), assume ARM64, since the
+              vast majority of active Android devices are 64-bit.
+
+           NOTE: There is currently no universal, spec-backed way
+           for a webpage to reliably read raw CPU architecture
+           across all browsers. This is the most accurate
+           approximation available without a native install
+           wrapper or server-side APK content negotiation.
+           ====================================================== */
+
+        const APK_ARM64 = 'Jawwek.apk';
+        const APK_32BIT = 'Jawwek32x.apk';
+
+        const downloadBtn = document.getElementById('downloadBtn');
+        const downloadMetaEl = document.getElementById('downloadMeta');
+
+        // Tracks which build is currently wired to the button + why
+        let resolvedBuild = { file: APK_ARM64, reason: 'metaDefault' };
+
+        function applyBuildToButton(build) {
+            resolvedBuild = build;
+            downloadBtn.setAttribute('href', build.file);
+            renderDownloadMeta();
+        }
+
+        function renderDownloadMeta() {
+            const t = translations[currentLang];
+            let text = t[resolvedBuild.reason] || '';
+
+            // If we ended up on the 32-bit build, also show a manual
+            // switch back to 64-bit; if on 64-bit by inference/default,
+            // show a manual fallback to 32-bit for older devices.
+            downloadMetaEl.innerHTML = '';
+            const label = document.createElement('span');
+            label.textContent = text;
+            downloadMetaEl.appendChild(label);
+
+            const needsFallback = resolvedBuild.file === APK_ARM64;
+            if (needsFallback) {
+                const sep = document.createTextNode(' \u00B7 ');
+                const link = document.createElement('button');
+                link.type = 'button';
+                link.className = 'fallback-link';
+                link.textContent = t.fallback32;
+                link.addEventListener('click', () => {
+                    applyBuildToButton({ file: APK_32BIT, reason: 'metaArm32' });
+                });
+                downloadMetaEl.appendChild(sep);
+                downloadMetaEl.appendChild(link);
+            }
+        }
+
+        function legacy32BitUA() {
+            const ua = navigator.userAgent || '';
+            // Known 32-bit-only markers that can still appear in UA
+            // strings on very old Android / Chromium builds.
+            return /armv7|armeabi(?!-v8a)|i686|x86(?!_64)/i.test(ua);
+        }
+
+        async function detectArchitecture() {
+            // 1) Try Chromium User-Agent Client Hints (most accurate)
+            try {
+                if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
+                    const ua = await navigator.userAgentData.getHighEntropyValues(['architecture', 'bitness']);
+                    if (ua && ua.bitness) {
+                        if (ua.bitness === '32') {
+                            return { file: APK_32BIT, reason: 'metaArm32' };
+                        }
+                        if (ua.bitness === '64') {
+                            return { file: APK_ARM64, reason: 'metaArm64' };
+                        }
+                    }
+                }
+            } catch (err) {
+                // UA-CH not permitted/available — fall through to next signal
+            }
+
+            // 2) Legacy UA string heuristic for old 32-bit-only devices
+            if (legacy32BitUA()) {
+                return { file: APK_32BIT, reason: 'metaArm32' };
+            }
+
+            // 3) Inconclusive — default to ARM64 (covers the vast
+            //    majority of active devices: modern Android, iOS users
+            //    who would ignore the APK anyway, desktop browsers, etc.)
+            return { file: APK_ARM64, reason: 'metaDefault' };
+        }
+
+        detectArchitecture().then(applyBuildToButton).catch(() => {
+            applyBuildToButton({ file: APK_ARM64, reason: 'metaDefault' });
         });
     </script>
 </body>
